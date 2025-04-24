@@ -57,6 +57,7 @@ while hasdata(IMDS) && iter <= MAX_ITER
     imgBin = ~imbinarize(img, THRESH);
     imgEdge = filter2(L, imgBin);
     imgProps = regionprops(imgBin);
+    NUM_BBOX = numel({imgProps.BoundingBox}); 
     figure, imshow(imgBin)
 
     [histCounts, ~] = imhist(img);
