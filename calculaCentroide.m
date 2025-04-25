@@ -1,3 +1,6 @@
+% Cálcula el centroide empleando la técnica dada en clase a partir de una
+% imagen binaria. Devuelve el centroide como un vector de coordenadas [x,
+% y]
 function centroide = calculaCentroide(plantillaBinaria)
     plantilla = plantillaBinaria; 
     

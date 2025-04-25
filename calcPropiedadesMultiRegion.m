@@ -1,30 +1,39 @@
-function [area, perimetro, bboxes_mat, per2_area, centroidePonderado, firma, std_firma] = propMultiRegion(img, imgBin, imgEdge, imgProps)
+% Cálcula las propiedades para aquellas imagenes con más de una región
+% detectada en la imagen
+% [area, perimetro, per2_area, centroidePonderado, firma, std_firma, bboxes_mat] = calcPropiedadesMultiRegion(img, imgBin, imgEdge, imgProps)
+%{
+OUTPUTS----------------------------------------------------
+area : area de la pieza, suma del area de todas las regiones.
+perimetro: suma de todos los perimetros de las regiones.
+per2_area: perimetro^2 / area.
+centroidePonderado = centroide global de la imagen, teniendo en cuenta los
+centroides de cada región y sus respectivas áreas.
+firma: firma de la imagen.
+std_firma: desviación estándar de la imagen (cuánto más pequeña más
+parecida a un circul).
+bboxes_mat: Matriz de dimensiones NUM_REGIONES x 4, contenienedo todas las
+bounding boxes en formato [x, y, width, height].
 
+INPUTS----------------------------------------------------
+img: imagen
+imgBin: imagen binaria.
+imgEdge: Imagen de bordes.
+imgProps: estructura de propiedades de la imagen obtenida por regionProps.
+%}
+function [area, perimetro, per2_area, centroidePonderado, firma, std_firma, bboxes_mat] = calcPropiedadesMultiRegion(img, imgBin, imgEdge, imgProps)
+    num_regions = numel({imgProps.Area});
 
-if num_regions >1
     bboxes = {imgProps.BoundingBox};
     areas = {imgProps.Area};
     centroides = {imgProps.Centroid};
     perimetros = {imgProps.Perimeter};
 
-    % recorrer hacia atrás para evitar problemas de apuntar a un índice
-    % que no existe (longitud del cell variable)
-    for region = num_regions:-1:1
-        bbox_region = cell2mat(bboxes(region));
-        x = bbox_region(1);
-        y = bbox_region(2);
-        w = bbox_region(3);
-        h = bbox_region(4);
-        seccion_area = [x:(x)+w, y:(y+h)];
-
-        if all(bbox_region(3:4) == size(imgBin))
-            bboxes(region) = [];
-            areas(region) = [];
-            centroides(region) = [];
-            perimetros(region) = [];
-        end
-
-        % probablemente sea ruido
+    % Elimina propiedades redundanetes ( no pertenecne a la figura sino a
+    % la imagen completa) 
+    try 
+  [areas, perimetros, centroides, bboxes] = depuraProps(imgBin, imgProps);
+    catch exception
+        exception	
     end
 
     % Conversión a un tipo fácil de trabajar
@@ -66,15 +75,5 @@ if num_regions >1
         w = bboxes_mat(region, 3);
         h = bboxes_mat(region, 4);
     end
-    hold off
-else    % solo una region -------------------------------------------------
 
-    perimetro = sum(imgEdge, "all");
-    area = sum(imgBin,"all");
-    centroidePonderado = calculaCentroide(imgBin);
-    per2_area = perimetro^2 / area;
-    firma = calculaFirma(imgBin,centroidePonderado);
-    std_firma = std(firma);
-
-end
 end

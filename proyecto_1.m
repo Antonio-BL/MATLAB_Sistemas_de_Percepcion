@@ -47,17 +47,16 @@ L = [0, -1, 0;
 while hasdata(IMDS) && iter <= MAX_ITER
 
     % Lectura de imagen
-    [img, imgBin, imgEdge, imgProps, THRESH] = lecturaIMG_IMDS(IMDS); 
+    [img, imgBin, imgEdge, imgProps, THRESH] = lecturaIMG_IMDS(IMDS, IMG_SIZE);
+    
+    % Cálculo de las propiedades
+    [area, perimetro, bboxes_mat, per2_area, centroidePonderado, firma, std_firma] =...
+     calcPropiedades(img, imgBin, imgEdge, imgProps); 
 
-    % Ddebido a la mala binarización de Otsu puede reconocer múltiples
-    % regiones
-    num_regions = numel({imgProps.Area});
-    % múltiples regiones -----------------------------------------------
-    % propiedades de cada región
-
-    % Montaje del vector de características
-
+    % cálculo del centroide relativo
     centroideRelativo = centroidePonderado / area;
+
+    % Cálculo del vector de características
     caracteristicas = [perimetro, area, per2_area, centroideRelativo, std_firma];
     X = [X; caracteristicas];
     clase = IMDS.Labels(iter);
