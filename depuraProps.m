@@ -3,11 +3,11 @@
 % dimensión que la imagen.
 % También elimina aquellas propiedades asociadas a regiones menores que
 % cierto porporción (0.6 por defecto) de la mayor región.
-function [areas, perimetros, centroides, bboxes] = depuraProps(imgBin, imgProps, COEF)
+function [areas, perimetros, centroides, bboxes, num_regions] = depuraProps(imgBin, imgProps, COEF)
 if nargin < 3; COEF = 0.6; end
 
 num_regions = numel({imgProps.Area});
-NUM_REGIONS_1 = num_regions; 
+NUM_REGIONS_1 = num_regions;
 
 bboxes = {imgProps.BoundingBox};
 areas = {imgProps.Area};
@@ -30,31 +30,36 @@ for region = num_regions:-1:1
         perimetros(region) = [];
     end
 end
-
-bboxes = {bboxes};
-areas = {areas};
-centroides = {centroides};
-perimetros = {perimetros};
+% puede dar error de tipo
+% bboxes = {bboxes};
+% areas = {areas};
+% centroides = {centroides};
+% perimetros = {perimetros};
 
 num_regions = numel({areas});
-while num_regions > 1
+while num_regions >= 2
+    num_regions = numel({areas});
     for region = num_regions : -1 : 1
         [minArea, minIndx] = min(areas(region));
-        if minArea <= COEF * max(areas(region))
+        [maxArea, maxIndx] = max(areas(region));
+        if minArea <= COEF *maxArea
             bboxes(minIndx) = [];
             areas(minIndx) = [];
             centroides(minIndx) = [];
             perimetros(minIndx) = [];
+            num_regions = numel({areas});
+        elseif num_regions == 2 && minArea > COEF *maxArea
+            break
         end
     end
-    bboxes = {bboxes};
-    areas = {areas};
-    centroides = {centroides};
-    perimetros = {perimetros};
+    if num_regions == 2 && minArea > COEF *maxArea
+        break
+    end
 
     num_regions = numel({areas});
 end
-delRegions = NUM_REGIONS_1 - num_regions; 
-fprintf("depuraProps: %d regiones eliminadas \n", delRegions)
+delRegions = NUM_REGIONS_1 - num_regions;
+fprintf("depuraProps: %d / %d regiones eliminadas \n", delRegions, NUM_REGIONS_1)
+
 %---%
 end

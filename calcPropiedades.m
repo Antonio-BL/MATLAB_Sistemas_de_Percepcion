@@ -1,10 +1,10 @@
-function [area, perimetro, bboxes_mat, per2_area, centroidePonderado, firma, std_firma] =...
+function [area, perimetro, bboxes_mat, per2_area, centroidePonderado, firma, std_firma, num_regions] =...
  calcPropiedades(img, imgBin, imgEdge, imgProps)
 
- num_regionsBin = numel({imgProps.Area});
+ num_regions = numel({imgProps.Area});
  
 
-if num_regionsBin >1
+if num_regions >1
 [area, perimetro, per2_area, centroidePonderado, firma, std_firma, bboxes_mat] = ...
 calcPropiedadesMultiRegion(img, imgBin, imgEdge, imgProps); 
 

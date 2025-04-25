@@ -20,60 +20,40 @@ imgBin: imagen binaria.
 imgEdge: Imagen de bordes.
 imgProps: estructura de propiedades de la imagen obtenida por regionProps.
 %}
-function [area, perimetro, per2_area, centroidePonderado, firma, std_firma, bboxes_mat] = calcPropiedadesMultiRegion(img, imgBin, imgEdge, imgProps)
-    num_regions = numel({imgProps.Area});
+function [area, perimetro, per2_area, centroidePonderado, firma, std_firma, bboxes_mat, num_regions] = calcPropiedadesMultiRegion(img, imgBin, imgEdge, imgProps)
+num_regions = numel({imgProps.Area});
 
-    bboxes = {imgProps.BoundingBox};
-    areas = {imgProps.Area};
-    centroides = {imgProps.Centroid};
-    perimetros = {imgProps.Perimeter};
+bboxes = {imgProps.BoundingBox};
+areas = {imgProps.Area};
+centroides = {imgProps.Centroid};
+perimetros = {imgProps.Perimeter};
 
-    % Elimina propiedades redundanetes ( no pertenecne a la figura sino a
-    % la imagen completa) 
-    try 
-  [areas, perimetros, centroides, bboxes] = depuraProps(imgBin, imgProps);
-    catch exception
-        exception	
-    end
+% Elimina propiedades redundanete
+if num_regions > 1
+[areas, perimetros, centroides, bboxes, num_regions] = depuraProps(imgBin, imgProps);
+end
 
-    % Conversión a un tipo fácil de trabajar
-    areas_mat = cell2mat(areas);
-    num_regions = length(areas_mat);
-    perimetros_mat = cell2mat(perimetros);
 
-    centroides_mat  = zeros(num_regions, 2);
-    bboxes_mat  = zeros(num_regions, 4);
-    for region =  num_regions:-1:1
-        centroides_mat(region,:) = cell2mat(centroides(region));
-        bboxes_mat(region, :) = cell2mat(bboxes(region));
-    end
+% Conversión de tipo
+[areas_mat, perimetros_mat, centroides_mat, bboxes_mat] =...
+    impropsAMatriz(areas, perimetros, centroides, bboxes); 
 
-    for region = 1 : num_regions
-        if areas_mat(region) < 0.4*max(areas_mat(region))
-            bboxes(region) = [];
-            areas(region) = [];
-            centroides(region) = [];
-            perimetros(region) = [];
-            imgBin(seccion_area) = zeros(size(seccion_area));
-        end
-    end
+% Cálculo de las propiedades
+area = sum(areas_mat, "all");
+perimetro = sum(perimetros_mat, "all");
+per2_area = perimetro^2/area;
 
-    % Cálculo de las propiedades
-    area = sum(areas_mat, "all");
-    perimetro = sum(perimetros_mat, "all");
-    per2_area = perimetro^2/area;
+XcentroidePonderado = (areas_mat * centroides_mat(:,1))/area;
+YcentroidePonderado = (areas_mat * centroides_mat(:,2))/area;
+centroidePonderado = [XcentroidePonderado, YcentroidePonderado];
+firma = calculaFirma(imgBin,centroidePonderado);
+std_firma = std(firma);
 
-    XcentroidePonderado = (areas_mat * centroides_mat(:,1))/area;
-    YcentroidePonderado = (areas_mat * centroides_mat(:,2))/area;
-    centroidePonderado = [XcentroidePonderado, YcentroidePonderado];
-    firma = calculaFirma(imgBin,centroidePonderado);
-    std_firma = std(firma);
-
-    for region = 1 : num_regions
-        x = bboxes_mat(region, 1);
-        y = bboxes_mat(region, 2);
-        w = bboxes_mat(region, 3);
-        h = bboxes_mat(region, 4);
-    end
+for region = 1 : num_regions
+    x = bboxes_mat(region, 1);
+    y = bboxes_mat(region, 2);
+    w = bboxes_mat(region, 3);
+    h = bboxes_mat(region, 4);
+end
 
 end

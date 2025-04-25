@@ -1,10 +1,11 @@
 clc, clear, close all
-
+global recursiveRecallCounter
+recursiveRecallCounter = 0; 
 %% IMPORTACIÓN
 
 % defino dataset y creo el data store
 % Nota: Funciona en local, cambia el PATH del DATASET al de tu máquina:
-DATASET_PATH = 'C:\Users\Antonio\Documents\MATLAB\GITI\PERCEPCION\PROYECTO\Reduced_Training_data';
+DATASET_PATH = 'C:\Users\Antonio\Documents\MATLAB\GITI\PERCEPCION\PROYECTO\train';
 
 
 DIR = dir(DATASET_PATH);
@@ -48,16 +49,19 @@ while hasdata(IMDS) && iter <= MAX_ITER
 
     % Lectura de imagen
     [img, imgBin, imgEdge, imgProps, THRESH] = lecturaIMG_IMDS(IMDS, IMG_SIZE);
-    
+
     % Cálculo de las propiedades
-    [area, perimetro, bboxes_mat, per2_area, centroidePonderado, firma, std_firma] =...
+    [area, perimetro, bboxes_mat, per2_area, centroidePonderado, firma, std_firma, num_regions] =...
+     calcPropiedades(img, imgBin, imgEdge, imgProps); 
+    
+    [~, ~ , ~, ~, ~, ~, ~, num_regions_NotBin] =...
      calcPropiedades(img, imgBin, imgEdge, imgProps); 
 
     % cálculo del centroide relativo
     centroideRelativo = centroidePonderado / area;
 
     % Cálculo del vector de características
-    caracteristicas = [perimetro, area, per2_area, centroideRelativo, std_firma];
+    caracteristicas = [area, perimetro, per2_area, centroideRelativo, std_firma, num_regions, num_regions_NotBin];
     X = [X; caracteristicas];
     clase = IMDS.Labels(iter);
     Y = [Y; clase];
