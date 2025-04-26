@@ -81,3 +81,4 @@ Y_pred = double(Y_pred);
 
 %% Plot
 representa(Y, Y_pred, NUM_LABELS)
+scatter_Caract(X, Y, Y_pred)

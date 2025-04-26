@@ -1,0 +1,41 @@
+function scatter_Caract(X, Y, Y_pred, NUM_LABELS)
+realData = array2table([X, Y]);
+predData = array2table([X, Y_pred]);
+NUM_CARACT = length((realData.Properties.VariableNames))
+labels = unique(Y);
+hold on
+tableVar = [1, 2];
+for lbl_Indx = 1 : NUM_LABELS
+    label = labels(lbl_Indx);
+    
+    % variable que contiene el nombre de la última columna de la tabla
+    Endvar = predData.Properties.VariableNames(end); 
+    Endvar = Endvar{:}
+    % Obtener elementos de la fila que contienen puntos con
+    % la etiqueta adecuada
+    y_pred_label = predData((predData.(Endvar)==label), Endvar);
+    y_real_label = realData((realData.(Endvar)==label), Endvar);
+    
+    y_real_label = table2array(y_real_label); 
+    y_pred_label = table2array(y_pred_label);
+
+    xvar = tableVar(1);
+    yvar = tableVar(2);
+
+    % real
+    scatter3(realData, xvar, yvar, y_real_label)
+    % pred
+    scatter3(predData, xvar, yvar, y_pred_label)
+
+
+    if max(tableVar)<NUM_CARACT-1
+        tableVar = tableVar + ones(size(tableVar));
+    elseif max(tableVar)==NUM_CARACT-1
+        break;
+    end
+end
+
+hold off
+
+
+
