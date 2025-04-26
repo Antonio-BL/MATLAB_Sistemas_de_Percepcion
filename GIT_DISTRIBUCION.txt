@@ -1,3 +1,0 @@
-branches de git principals: 
-- delete_img : Proyecto para MNIST funciona, error entre 6 y 8
-- adaptacion : a partir de delete_img, crear funciones para simplificar lectura
