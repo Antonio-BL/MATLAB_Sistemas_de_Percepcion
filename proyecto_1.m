@@ -5,7 +5,7 @@ recursiveRecallCounter = 0;
 
 % defino dataset y creo el data store
 % Nota: Funciona en local, cambia el PATH del DATASET al de tu máquina:
-DATASET_PATH = 'C:\Users\Antonio\Documents\MATLAB\GITI\PERCEPCION\PROYECTO\train';
+DATASET_PATH = 'C:\Users\Antonio\Documents\MATLAB\GITI\PERCEPCION\PROYECTO\vehicles_train_reduced';
 
 
 DIR = dir(DATASET_PATH);
