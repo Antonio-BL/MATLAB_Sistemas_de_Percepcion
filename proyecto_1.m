@@ -78,5 +78,9 @@ Y = double(Y);
 Y_pred = double(Y_pred);
 
 %% Plot
+clc
+figure
 representa(Y, Y_pred, NUM_LABELS)
+
+figure
 scatter_Caract(X, Y, Y_pred)
