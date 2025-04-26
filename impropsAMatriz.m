@@ -1,5 +1,6 @@
 % Convierte las propiedades depuradas de cell a matriz para poder ser
-% utilizables. FUNCIÓN RECURSIVA: posible problema de tipo
+% utilizables. FUNCIÓN RECURSIVA: posible problema de tipo cell -> mat,
+% limitado a 5 llamadas
 function [areas_mat, perimetros_mat, centroides_mat, bboxes_mat] =...
     impropsAMatriz(areas, perimetros, centroides, bboxes)
 

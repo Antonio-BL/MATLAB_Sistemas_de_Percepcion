@@ -1,11 +1,11 @@
-clc, clear, close all, load clasificador.mat
+clc, clear, close all
 global recursiveRecallCounter
-recursiveRecallCounter = 0;
+recursiveRecallCounter = 0; 
 %% IMPORTACIÓN
 
 % defino dataset y creo el data store
 % Nota: Funciona en local, cambia el PATH del DATASET al de tu máquina:
-DATASET_PATH = 'C:\Users\Antonio\Documents\MATLAB\GITI\PERCEPCION\PROYECTO\test';
+DATASET_PATH = 'C:\Users\Antonio\Documents\MATLAB\GITI\PERCEPCION\PROYECTO\train';
 
 
 DIR = dir(DATASET_PATH);
@@ -52,10 +52,10 @@ while hasdata(IMDS) && iter <= MAX_ITER
 
     % Cálculo de las propiedades
     [area, perimetro, bboxes_mat, per2_area, centroidePonderado, firma, std_firma, num_regions] =...
-        calcPropiedades(img, imgBin, imgEdge, imgProps);
-
+     calcPropiedades(img, imgBin, imgEdge, imgProps); 
+    
     [~, ~ , ~, ~, ~, ~, ~, num_regions_NotBin] =...
-        calcPropiedades(img, ~imgBin, imgEdge, imgProps);
+     calcPropiedades(img, ~imgBin, imgEdge, imgProps); 
 
     % cálculo del centroide relativo
     centroideRelativo = centroidePonderado / area;
@@ -71,14 +71,9 @@ end
 
 %% Train & Predict
 
-%{
- caracteristicas = [area, perimetro, per2_area, centroideRelativo, std_firma, num_regions, num_regions_NotBin];
-X = [X; caracteristicas];
-clase = IMDS.Labels(iter);
-Y = [Y; clase];
-%}
-
+clasificador = fitcdiscr(X,Y);
 Y_pred = clasificador.predict(X);
+save clasificador.mat clasificador
 Y = double(Y);
 Y_pred = double(Y_pred);
 

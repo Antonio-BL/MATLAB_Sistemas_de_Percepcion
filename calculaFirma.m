@@ -1,3 +1,4 @@
+% Calcula la firma de la imagen binaria
 function firma = calculaFirma(imgBin, centroide)
 [FILAS, COLUMNAS] = size(imgBin);
 cX = centroide(1);

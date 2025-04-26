@@ -1,4 +1,4 @@
-function [img, imgBin, imgEdge, imgProps, THRESH] = lecturaIMG_IMDS(IMDS, IMG_SIZE)
+function [img, imgBin, imgEdge,  THRESH] = lecturaIMG_IMDS(IMDS, IMG_SIZE)
 img = read(IMDS);
 persistent L
 L = [0, -1, 0;
@@ -28,5 +28,4 @@ img = uint8(img);
 THRESH = graythresh(img);
 imgBin = imbinarize(img, THRESH);
 imgEdge = filter2(L, imgBin);
-imgProps = regionprops(imgBin, "all");
 end
