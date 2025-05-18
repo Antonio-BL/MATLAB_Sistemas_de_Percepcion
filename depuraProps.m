@@ -30,11 +30,7 @@ for region = num_regions:-1:1
         perimetros(region) = [];
     end
 end
-% puede dar error de tipo
-% bboxes = {bboxes};
-% areas = {areas};
-% centroides = {centroides};
-% perimetros = {perimetros};
+
 
 num_regions = numel({areas});
 while num_regions >= 2

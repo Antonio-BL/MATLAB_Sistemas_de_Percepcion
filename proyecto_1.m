@@ -1,13 +1,12 @@
 clc, clear, close all
-global recursiveRecallCounter
-recursiveRecallCounter = 0; 
+global recursiveRecallCounter imgCounter
+recursiveRecallCounter = 0;
+imgCounter = 0;
 %% IMPORTACIÓN
 
 % defino dataset y creo el data store
 % Nota: Funciona en local, cambia el PATH del DATASET al de tu máquina:
-DATASET_PATH = 'C:\Users\Antonio\Documents\MATLAB\GITI\PERCEPCION\PROYECTO\vehicles_train_reduced';
-
-
+DATASET_PATH = 'C:\Users\Antonio\Documents\MATLAB\GITI\PERCEPCION\PROYECTO\numbers_train';
 DIR = dir(DATASET_PATH);
 NUM_LABELS = nnz(~ismember({DIR.name},{'.','..'})&[DIR.isdir]);
 LABELS = ({DIR.name});
@@ -20,19 +19,6 @@ LABELS = ({DIR.name});
 IMDS = imageDatastore(DATASET_PATH, "IncludeSubfolders",true, ...
     "LabelSource","foldernames");
 
-% ========================================= %
-%         DESCRIPCIÓN DEL DATASET           %
-% ========================================= %
-%
-% DEFINICIÓN INICIAL: CARACTERÍSTICAS: 3
-% X = vector de características a definir:
-%     histograma, distribución de pixeles
-%     suma de píxeles binarizados
-%     relación perímetro^2 / Área
-% Y = labels.
-%     0 : martillo
-%     1 : LLave inglesa (ajustable o no)
-%     2 : Wrench (tipo de llave inglesa)
 
 
 %% OBTENCIÓN DE LOS VECTORES DE CARACTERÍSTICAS
@@ -46,27 +32,30 @@ L = [0, -1, 0;
     0,  -1,  0] * 0.25;
 
 while hasdata(IMDS) && iter <= MAX_ITER
-
+    imgCounter = imgCounter + 1;
     % Lectura de imagen
     [img, imgBin, imgEdge,THRESH] = lecturaIMG_IMDS(IMDS, IMG_SIZE);
 
     % Cálculo de las propiedades
     [area, perimetro, bboxes_mat, per2_area, centroidePonderado, firma, std_firma, num_regions] =...
-     calcPropiedades(img, imgBin, imgEdge); 
-    
-    % [~, ~ , ~, ~, ~, ~, ~, num_regions_NotBin] =...
-    %  calcPropiedades(img, ~imgBin, imgEdge); 
+        calcPropiedades(img, imgBin, imgEdge);
 
     % cálculo del centroide relativo
     centroideRelativo = centroidePonderado / area;
 
     % Cálculo del vector de características
-    caracteristicas = [area, perimetro, per2_area, centroideRelativo, std_firma, num_regions];
+    caracteristicas = [per2_area, centroideRelativo, std_firma, num_regions];
     X = [X; caracteristicas];
     clase = IMDS.Labels(iter);
     Y = [Y; clase];
 
     iter = iter +1 ;
+    if any([50, 100, 220, 330, 400, 500, 600, 700, 800, 900] == imgCounter)
+        figure
+        imshow(imgBin);
+        title(strcat("Numero detectado: ", string(clase)));
+
+    end
 end
 
 %% Train & Predict
@@ -79,8 +68,6 @@ Y_pred = double(Y_pred);
 
 %% Plot
 clc
-figure
 representa(Y, Y_pred, NUM_LABELS)
 
-figure
-scatter_Caract(X, Y, Y_pred)
+% scatter_Caract(X, Y, Y_pred)

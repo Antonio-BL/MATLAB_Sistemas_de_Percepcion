@@ -1,25 +1,25 @@
 % Cálcula las propiedades para aquellas imagenes con más de una región
 % detectada en la imagen
 % [area, perimetro, per2_area, centroidePonderado, firma, std_firma, bboxes_mat] = calcPropiedadesMultiRegion(img, imgBin, imgEdge, imgProps)
-%{
-OUTPUTS----------------------------------------------------
-area : area de la pieza, suma del area de todas las regiones.
-perimetro: suma de todos los perimetros de las regiones.
-per2_area: perimetro^2 / area.
-centroidePonderado = centroide global de la imagen, teniendo en cuenta los
-centroides de cada región y sus respectivas áreas.
-firma: firma de la imagen.
-std_firma: desviación estándar de la imagen (cuánto más pequeña más
-parecida a un circul).
-bboxes_mat: Matriz de dimensiones NUM_REGIONES x 4, contenienedo todas las
-bounding boxes en formato [x, y, width, height].
+%
+% OUTPUTS----------------------------------------------------
+% area : area de la pieza, suma del area de todas las regiones.
+% perimetro: suma de todos los perimetros de las regiones.
+% per2_area: perimetro^2 / area.
+% centroidePonderado = centroide global de la imagen, teniendo en cuenta los
+% centroides de cada región y sus respectivas áreas.
+% firma: firma de la imagen.
+% std_firma: desviación estándar de la imagen (cuánto más pequeña más
+% parecida a un circul).
+% bboxes_mat: Matriz de dimensiones NUM_REGIONES x 4, contenienedo todas las
+% bounding boxes en formato [x, y, width, height].
+% 
+% INPUTS----------------------------------------------------
+% img: imagen
+% imgBin: imagen binaria.
+% imgEdge: Imagen de bordes.
+% imgProps: estructura de propiedades de la imagen obtenida por regionProps.
 
-INPUTS----------------------------------------------------
-img: imagen
-imgBin: imagen binaria.
-imgEdge: Imagen de bordes.
-imgProps: estructura de propiedades de la imagen obtenida por regionProps.
-%}
 function [area, perimetro, per2_area, centroidePonderado, firma, std_firma, bboxes_mat, num_regions] = calcPropiedadesMultiRegion(img, imgBin, imgEdge, imgProps)
 num_regions = numel({imgProps.Area});
 
@@ -49,11 +49,5 @@ centroidePonderado = [XcentroidePonderado, YcentroidePonderado];
 firma = calculaFirma(imgBin,centroidePonderado);
 std_firma = std(firma);
 
-for region = 1 : num_regions
-    x = bboxes_mat(region, 1);
-    y = bboxes_mat(region, 2);
-    w = bboxes_mat(region, 3);
-    h = bboxes_mat(region, 4);
-end
 
 end

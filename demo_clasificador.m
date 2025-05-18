@@ -1,12 +1,12 @@
 clc, clear, close all, load clasificador.mat
-global recursiveRecallCounter
+global recursiveRecallCounter imgCounter
+imgCounter = 0; 
 recursiveRecallCounter = 0;
 %% IMPORTACIÓN
 
 % defino dataset y creo el data store
 % Nota: Funciona en local, cambia el PATH del DATASET al de tu máquina:
-DATASET_PATH = 'C:\Users\Antonio\Documents\MATLAB\GITI\PERCEPCION\PROYECTO\vehicles_test_augmented';
-
+DATASET_PATH = 'C:\Users\Antonio\Documents\MATLAB\GITI\PERCEPCION\PROYECTO\numbers_train';
 
 DIR = dir(DATASET_PATH);
 NUM_LABELS = nnz(~ismember({DIR.name},{'.','..'})&[DIR.isdir]);
@@ -20,19 +20,6 @@ LABELS = ({DIR.name});
 IMDS = imageDatastore(DATASET_PATH, "IncludeSubfolders",true, ...
     "LabelSource","foldernames");
 
-% ========================================= %
-%         DESCRIPCIÓN DEL DATASET           %
-% ========================================= %
-%
-% DEFINICIÓN INICIAL: CARACTERÍSTICAS: 3
-% X = vector de características a definir:
-%     histograma, distribución de pixeles
-%     suma de píxeles binarizados
-%     relación perímetro^2 / Área
-% Y = labels.
-%     0 : martillo
-%     1 : LLave inglesa (ajustable o no)
-%     2 : Wrench (tipo de llave inglesa)
 
 
 %% OBTENCIÓN DE LOS VECTORES DE CARACTERÍSTICAS
@@ -62,7 +49,12 @@ while hasdata(IMDS) && iter <= MAX_ITER
     X = [X; caracteristicas];
     clase = IMDS.Labels(iter);
     Y = [Y; clase];
-
+    
+        if any([50, 100, 220, 330, 400, 500, 600, 700, 800, 900] == imgCounter)
+        figure
+        imshow(imgBin);
+        title(strcat("Numero detectado: ", string(clase)));
+        end
     iter = iter +1 ;
 end
 
@@ -81,4 +73,4 @@ Y_pred = double(Y_pred);
 
 %% Plot
 representa(Y, Y_pred, NUM_LABELS)
-scatter_Caract(X, Y, Y_pred)
+% scatter_Caract(X, Y, Y_pred)
