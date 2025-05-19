@@ -6,7 +6,7 @@ recursiveRecallCounter = 0;
 
 % defino dataset y creo el data store
 % Nota: Funciona en local, cambia el PATH del DATASET al de tu máquina:
-DATASET_PATH = 'C:\Users\Antonio\Documents\MATLAB\GITI\PERCEPCION\PROYECTO\numbers_train';
+DATASET_PATH = 'C:\Users\Antonio\Documents\MATLAB\GITI\PERCEPCION\PROYECTO\numbers_test';
 
 DIR = dir(DATASET_PATH);
 NUM_LABELS = nnz(~ismember({DIR.name},{'.','..'})&[DIR.isdir]);
