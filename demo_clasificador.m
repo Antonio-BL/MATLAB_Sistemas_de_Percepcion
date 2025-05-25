@@ -1,12 +1,12 @@
 clc, clear, close all, load clasificador.mat
 global recursiveRecallCounter imgCounter
-imgCounter = 0; 
+imgCounter = 0;
 recursiveRecallCounter = 0;
 %% IMPORTACIÓN
 
 % defino dataset y creo el data store
 % Nota: Funciona en local, cambia el PATH del DATASET al de tu máquina:
-DATASET_PATH = 'C:\Users\Antonio\Documents\MATLAB\GITI\PERCEPCION\PROYECTO\numbers_test';
+DATASET_PATH = 'C:\Users\Antonio\Documents\MATLAB\GITI\PERCEPCION\PROYECTO\vehicles_test';
 
 DIR = dir(DATASET_PATH);
 NUM_LABELS = nnz(~ismember({DIR.name},{'.','..'})&[DIR.isdir]);
@@ -45,16 +45,16 @@ while hasdata(IMDS) && iter <= MAX_ITER
     centroideRelativo = centroidePonderado / area;
 
     % Cálculo del vector de características
-    caracteristicas = [area, perimetro, per2_area, centroideRelativo, std_firma, num_regions];
+    caracteristicas = [ per2_area, centroideRelativo, std_firma, num_regions];
     X = [X; caracteristicas];
     clase = IMDS.Labels(iter);
     Y = [Y; clase];
-    
-        if any([50, 100, 220, 330, 400, 500, 600, 700, 800, 900] == imgCounter)
+
+    if any([50, 100, 220, 330, 400, 500, 600, 700, 800, 900] == imgCounter)
         figure
         imshow(imgBin);
         title(strcat("Numero detectado: ", string(clase)));
-        end
+    end
     iter = iter +1 ;
 end
 
